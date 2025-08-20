@@ -6,17 +6,37 @@ pub type DieStack = Vec<Die>;
 #[derive(Clone, Debug)]
 pub struct Die {
     pub name: String,
-    pub sides: u8,
-    pub result: u8
+    pub sides: u32,
+    pub result: u32,
 }
 
 impl Die {
-    pub fn new(name: String, sides: u8) -> Self {
-        Self {
-            name,
-            sides,
+    pub fn new(name: &String, sides: &u32) -> Die {
+        Die {
+            name: name.to_string(),
+            sides: *sides,
             result: 0,
         }
+    }
+}
+
+pub trait Outputable {
+   fn print_results(&self); 
+}
+
+impl Outputable for DieStack {
+    fn print_results(&self) {
+        let mut total: u32 = 0;
+        println!("{:<8} {:<8}", "Die", "Result");
+        println!("-----------------");
+
+        for d in self {
+            println!("{:<8} {:<8}", d.name, d.result);
+            total += d.result;
+        }
+
+        println!("=================");
+        println!("{:<8} {:<8}", "Total", total);
     }
 }
 
@@ -37,4 +57,3 @@ impl Rollable for DieStack {
         self.iter_mut().for_each(|d| d.roll());
     }
 }
-

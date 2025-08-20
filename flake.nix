@@ -41,6 +41,7 @@
       devShells = forEachSupportedSystem ({ pkgs }: {
         default = pkgs.mkShell {
           packages = with pkgs; [
+            bacon
             rustToolchain
             openssl
             pkg-config
