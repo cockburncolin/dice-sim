@@ -3,7 +3,7 @@ use std::vec::Vec;
 
 pub type DieStack = Vec<Die>;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Die {
     pub name: String,
     pub sides: u32,
@@ -11,17 +11,17 @@ pub struct Die {
 }
 
 impl Die {
-    pub fn new(name: &String, sides: &u32) -> Die {
+    pub fn new() -> Die {
         Die {
-            name: name.to_string(),
-            sides: *sides,
-            result: 0,
+            name: String::from(""),
+            sides: 0,
+            result: 0
         }
     }
 }
 
 pub trait Outputable {
-   fn print_results(&self); 
+    fn print_results(&self);
 }
 
 impl Outputable for DieStack {
@@ -30,10 +30,10 @@ impl Outputable for DieStack {
         println!("{:<8} {:<8}", "Die", "Result");
         println!("-----------------");
 
-        for d in self {
+        self.iter().for_each(|d| {
             println!("{:<8} {:<8}", d.name, d.result);
             total += d.result;
-        }
+        });
 
         println!("=================");
         println!("{:<8} {:<8}", "Total", total);

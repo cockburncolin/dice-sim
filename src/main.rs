@@ -1,5 +1,7 @@
 mod dice;
 
+use std::iter::repeat;
+
 use clap::Parser;
 use dice::{Die, DieStack, Outputable, Rollable};
 
@@ -12,34 +14,39 @@ struct Args {
     dice_str: Vec<String>,
 }
 
-fn process_string(s: &String) -> DieStack {
+/// Process the strings provided by the user
+fn process_string(input: Vec<String>) -> DieStack {
     let mut ret_stack = DieStack::new();
-    let dice_string = s.to_uppercase();
-    let str_vec: Vec<&str> = dice_string.split('D').collect();
 
-    let count: u32 = if str_vec[0].is_empty() {
-        1
-    } else {
-        str_vec[0].parse().expect("Count provided wasn't a number")
-    };
+    for str in input {
+        let mut die = Die::new();
+        let upper_string = str.to_uppercase();
+        let dice_string: Vec<&str> = upper_string.split("D").collect();
 
-    let sides: u32 = str_vec[1].parse().expect("Sides provided not a number");
-    let name: String = String::from("D") + &sides.to_string();
+        let count: usize = if dice_string[0].is_empty() {
+            1
+        } else {
+            dice_string[0]
+                .parse()
+                .expect("Count provided wasn't a number")
+        };
 
-    for _ in 0..count {
-        ret_stack.push(Die::new(&name, &sides));
+        let sides: u32 = dice_string[1].parse().expect("Sides provided not a number");
+        let name = format!("D{sides}");
+
+        die.sides = sides;
+        die.name = name;
+
+        ret_stack.extend(repeat(die).take(count)); // Push die onto stack count times
     }
-
-    return ret_stack;      
+    return ret_stack;
 }
 
 fn main() {
     let args: Args = Args::parse();
     let mut stack = DieStack::new();
 
-    for s in args.dice_str {
-        stack.extend(process_string(&s));
-    }
+    stack.extend(process_string(args.dice_str));
 
     stack.roll();
     stack.print_results();
